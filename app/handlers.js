@@ -1,5 +1,6 @@
 const { nanoid } = require("nanoid");
 const bookshelf = require("../bookshelf");
+const { zeroOneToBool } = require("./helpers");
 
 const addBookHandler = (req, h) => {
     const {
@@ -83,11 +84,37 @@ const getBooksHandler = (req, h) => {
     const books = [];
 
     bookshelf.forEach((book) => {
-        books.push({
-            id: book.id,
-            name: book.name,
-            publisher: book.publisher,
-        });
+        if (name) {
+            if (book.name.toLowerCase().includes(name.toLowerCase())) {
+                books.push({
+                    id: book.id,
+                    name: book.name,
+                    publisher: book.publisher,
+                });
+            }
+        } else if (reading) {
+            if (zeroOneToBool(reading) === book.reading) {
+                books.push({
+                    id: book.id,
+                    name: book.name,
+                    publisher: book.publisher,
+                });
+            }
+        } else if (finished) {
+            if (zeroOneToBool(finished) === book.finished) {
+                books.push({
+                    id: book.id,
+                    name: book.name,
+                    publisher: book.publisher,
+                });
+            }
+        } else {
+            books.push({
+                id: book.id,
+                name: book.name,
+                publisher: book.publisher,
+            });
+        }
     });
 
     const response = h.response({
@@ -137,6 +164,8 @@ const updateBookHandler = (req, h) => {
     } = req.payload;
     const updatedAt = new Date().toISOString();
     const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
+    const finished = readPage === pageCount ? true : false;
+    console.log(finished);
 
     if (!name) {
         const response = h.response({
@@ -169,6 +198,7 @@ const updateBookHandler = (req, h) => {
             publisher,
             pageCount,
             readPage,
+            finished,
             reading,
             updatedAt,
         };
