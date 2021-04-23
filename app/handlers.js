@@ -14,7 +14,7 @@ const addBookHandler = (req, h) => {
         reading,
     } = req.payload;
     const id = nanoid(9);
-    const finished = false;
+    const finished = readPage === pageCount ? true : false;
     const insertedAt = new Date().toISOString();
     const updatedAt = insertedAt;
 
@@ -165,7 +165,9 @@ const updateBookHandler = (req, h) => {
     const updatedAt = new Date().toISOString();
     const bookIndex = bookshelf.findIndex((book) => book.id === bookId);
     const finished = readPage === pageCount ? true : false;
-    console.log(finished);
+    console.log("Page count: " + pageCount);
+    console.log("Read page: " + readPage);
+    console.log("Finished: " + finished);
 
     if (!name) {
         const response = h.response({
